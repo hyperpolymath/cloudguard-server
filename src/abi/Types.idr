@@ -1,16 +1,16 @@
 -- SPDX-License-Identifier: PMPL-1.0-or-later
--- Copyright (c) {{CURRENT_YEAR}} {{AUTHOR}} ({{OWNER}}) <{{AUTHOR_EMAIL}}>
+-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 --
 ||| ABI Type Definitions Template
 |||
 ||| This module defines the Application Binary Interface (ABI) for this library.
 ||| All type definitions include formal proofs of correctness.
 |||
-||| Replace {{PROJECT}} with your project name.
+||| Replace CLOUDGUARD_SERVER with your project name.
 |||
 ||| @see https://idris2.readthedocs.io for Idris2 documentation
 
-module {{PROJECT}}.ABI.Types
+module CLOUDGUARD_SERVER.ABI.Types
 
 import Data.Bits
 import Data.So

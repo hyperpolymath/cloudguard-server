@@ -1,11 +1,11 @@
 <!-- SPDX-License-Identifier: PMPL-1.0-or-later -->
-<!-- Replace {{PROJECT}} with your project name -->
+<!-- Replace CLOUDGUARD_SERVER with your project name -->
 
-# {{PROJECT}} Component Readiness Assessment
+# CLOUDGUARD_SERVER Component Readiness Assessment
 
 **Standard:** [Component Readiness Grades (CRG) v1.0](https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades)
-**Assessed:** {{DATE}}
-**Assessor:** {{AUTHOR}}
+**Assessed:** 2026-03-02
+**Assessor:** Jonathan D.A. Jewell
 
 ## Grade Reference
 
@@ -25,8 +25,8 @@
 
 | Component           | Grade | Release Stage      | Evidence Summary                              | Last Assessed |
 |---------------------|-------|--------------------|-----------------------------------------------|---------------|
-| `example-command`   | X     | —                  | Not yet tested.                               | {{DATE}}      |
-| `another-feature`   | X     | —                  | Not yet tested.                               | {{DATE}}      |
+| `example-command`   | X     | —                  | Not yet tested.                               | 2026-03-02      |
+| `another-feature`   | X     | —                  | Not yet tested.                               | 2026-03-02      |
 
 ## Detailed Assessment
 
@@ -36,7 +36,7 @@
 ### `example-command`
 
 - **Grade:** C (Beta)
-- **Last assessed:** {{DATE}}
+- **Last assessed:** 2026-03-02
 - **Evidence:** [Describe what was tested and what happened]
 - **Known limitations:** [What doesn't work or hasn't been tested]
 - **Promotion path:** [What's needed to reach the next grade]

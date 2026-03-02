@@ -1,34 +1,34 @@
-= {{PROJECT_NAME}} - Citation Guide
+= cloudguard-server - Citation Guide
 :toc:
 
 == BibTeX
 
 [source,bibtex]
 ----
-@software{{{PROJECT_NAME}}_{{CURRENT_YEAR}},
-  author = {{{AUTHOR_LAST}}, {{AUTHOR_FIRST}}},
-  title = {{{PROJECT_NAME}}},
-  year = {{{CURRENT_YEAR}}},
-  url = {https://github.com/{{OWNER}}/{{PROJECT_NAME}}},
+@software{cloudguard-server_2026,
+  author = {Jewell, Jonathan D.A.},
+  title = {cloudguard-server},
+  year = {2026},
+  url = {https://github.com/hyperpolymath/cloudguard-server},
   license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-{{AUTHOR_LAST}}, {{AUTHOR_INITIALS}} ({{CURRENT_YEAR}}) _{{PROJECT_NAME}}_ [Computer software]. Available at: https://github.com/{{OWNER}}/{{PROJECT_NAME}}
+Jewell, J.D.A.J. (2026) _cloudguard-server_ [Computer software]. Available at: https://github.com/hyperpolymath/cloudguard-server
 
 == OSCOLA
 
-{{AUTHOR}}, '{{PROJECT_NAME}}' ({{CURRENT_YEAR}}) <https://github.com/{{OWNER}}/{{PROJECT_NAME}}>
+Jonathan D.A. Jewell, 'cloudguard-server' (2026) <https://github.com/hyperpolymath/cloudguard-server>
 
 == MLA
 
-{{AUTHOR_LAST}}, {{AUTHOR_FIRST}} "{{PROJECT_NAME}}." {{CURRENT_YEAR}}, github.com/{{OWNER}}/{{PROJECT_NAME}}.
+Jewell, Jonathan D.A. "cloudguard-server." 2026, github.com/hyperpolymath/cloudguard-server.
 
 == APA 7
 
-{{AUTHOR_LAST}}, {{AUTHOR_INITIALS}} ({{CURRENT_YEAR}}). _{{PROJECT_NAME}}_ [Computer software]. GitHub. https://github.com/{{OWNER}}/{{PROJECT_NAME}}
+Jewell, J.D.A.J. (2026). _cloudguard-server_ [Computer software]. GitHub. https://github.com/hyperpolymath/cloudguard-server
 
 == See Also
 

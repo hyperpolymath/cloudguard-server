@@ -1,27 +1,27 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 #
-# Cerro Torre manifest for {{PROJECT_NAME}} .ctp bundle
+# Cerro Torre manifest for cloudguard-server .ctp bundle
 #
 # This manifest describes the container image for verified
 # container packaging. Used by `ct pack` to create .ctp bundles.
 
 [metadata]
-name = "{{SERVICE_NAME}}"
-version = "{{VERSION}}"
+name = "cloudguard-server"
+version = "0.1.0"
 revision = 1
-summary = "{{PROJECT_DESCRIPTION}}"
+summary = "CloudGuard Server — REST + WebSocket API for Cloudflare domain security management"
 description = """
-{{PROJECT_NAME}} — containerised service packaged as a verified
+cloudguard-server — containerised service packaged as a verified
 cerro-torre .ctp bundle with Ed25519 signing and full provenance
 tracking.
 """
 license = "{{LICENSE}}"
-homepage = "https://{{FORGE}}/{{OWNER}}/{{REPO}}"
-maintainer = "{{AUTHOR}} <{{EMAIL}}>"
+homepage = "https://github.com/hyperpolymath/cloudguard-server"
+maintainer = "Jonathan D.A. Jewell <{{EMAIL}}>"
 
 [provenance]
-upstream = "https://{{FORGE}}/{{OWNER}}/{{REPO}}"
-import_date = {{CURRENT_DATE}}T00:00:00Z
+upstream = "https://github.com/hyperpolymath/cloudguard-server"
+import_date = 2026-03-02T00:00:00Z
 
 [dependencies]
 runtime = ["ca-certificates", "curl"]
@@ -32,10 +32,10 @@ system = "podman"
 
 [build.environment]
 APP_HOST = "[::]"
-APP_PORT = "{{PORT}}"
+APP_PORT = "3847"
 
 [outputs]
-primary = "{{SERVICE_NAME}}"
+primary = "cloudguard-server"
 split = []
 
 [attestations]
@@ -54,7 +54,7 @@ drop = ["ALL"]
 add = ["NET_BIND_SERVICE"]
 
 [security.network]
-listen_tcp = [{{PORT}}]
+listen_tcp = [3847]
 
 [security.filesystem]
 read = ["/app/", "/data/"]

@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# {{PROJECT_NAME}} Container Image
+# cloudguard-server Container Image
 #
 # Multi-stage build template for Chainguard Wolfi base images.
 # Customise the builder stage for your language and copy the
 # resulting binary/release into the minimal runtime stage.
 #
 # Build with Podman:
-#   podman build -t {{SERVICE_NAME}}:latest -f container/Containerfile .
+#   podman build -t cloudguard-server:latest -f container/Containerfile .
 #
 # Run:
-#   podman run -p {{PORT}}:{{PORT}} {{SERVICE_NAME}}:latest
+#   podman run -p 3847:3847 cloudguard-server:latest
 #
 # Run with persistent volume:
-#   podman run -p {{PORT}}:{{PORT}} -v {{SERVICE_NAME}}-data:/data {{SERVICE_NAME}}:latest
+#   podman run -p 3847:3847 -v cloudguard-server-data:/data cloudguard-server:latest
 
 # ============================================================================
 # Stage 1: Builder
@@ -29,7 +29,7 @@
 #   COPY Cargo.toml Cargo.lock ./
 #   COPY src/ ./src/
 #   RUN cargo build --release
-#   # Output: /build/target/release/{{SERVICE_NAME}}
+#   # Output: /build/target/release/cloudguard-server
 #
 # --- Elixir ---
 #   RUN apk add --no-cache erl27-elixir-1.18 erlang-27 erlang-27-dev git build-base
@@ -39,14 +39,14 @@
 #   ENV MIX_ENV=prod
 #   RUN mix local.hex --force && mix local.rebar --force && \
 #       mix deps.get --only prod && mix compile && mix release
-#   # Output: /build/_build/prod/rel/{{SERVICE_NAME}}/
+#   # Output: /build/_build/prod/rel/cloudguard-server/
 #
 # --- Zig ---
 #   RUN apk add --no-cache zig build-base
 #   COPY build.zig build.zig.zon ./
 #   COPY src/ ./src/
 #   RUN zig build -Doptimize=ReleaseFast
-#   # Output: /build/zig-out/bin/{{SERVICE_NAME}}
+#   # Output: /build/zig-out/bin/cloudguard-server
 #
 FROM cgr.dev/chainguard/wolfi-base:latest AS builder
 
@@ -69,13 +69,13 @@ COPY . .
 FROM cgr.dev/chainguard/wolfi-base:latest
 
 # OCI image labels (compatible with cerro-torre .ctp bundle metadata)
-LABEL org.opencontainers.image.title="{{PROJECT_NAME}}" \
-      org.opencontainers.image.description="{{PROJECT_DESCRIPTION}}" \
-      org.opencontainers.image.url="https://{{FORGE}}/{{OWNER}}/{{REPO}}" \
-      org.opencontainers.image.source="https://{{FORGE}}/{{OWNER}}/{{REPO}}" \
-      org.opencontainers.image.vendor="{{OWNER}}" \
+LABEL org.opencontainers.image.title="cloudguard-server" \
+      org.opencontainers.image.description="CloudGuard Server — REST + WebSocket API for Cloudflare domain security management" \
+      org.opencontainers.image.url="https://github.com/hyperpolymath/cloudguard-server" \
+      org.opencontainers.image.source="https://github.com/hyperpolymath/cloudguard-server" \
+      org.opencontainers.image.vendor="hyperpolymath" \
       org.opencontainers.image.licenses="{{LICENSE}}" \
-      org.opencontainers.image.authors="{{AUTHOR}} <{{AUTHOR_EMAIL}}>" \
+      org.opencontainers.image.authors="Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>" \
       dev.cerrotorre.manifest="container/manifest.toml" \
       dev.cerrotorre.gatekeeper="container/.gatekeeper.yaml" \
       dev.stapeln.compose="container/compose.toml"
@@ -96,9 +96,9 @@ WORKDIR /app
 
 # TODO: Copy compiled binary/release from builder stage.
 # Examples:
-#   COPY --from=builder /build/target/release/{{SERVICE_NAME}} /app/{{SERVICE_NAME}}
-#   COPY --from=builder /build/_build/prod/rel/{{SERVICE_NAME}} /app/release/
-#   COPY --from=builder /build/zig-out/bin/{{SERVICE_NAME}} /app/{{SERVICE_NAME}}
+#   COPY --from=builder /build/target/release/cloudguard-server /app/cloudguard-server
+#   COPY --from=builder /build/_build/prod/rel/cloudguard-server /app/release/
+#   COPY --from=builder /build/zig-out/bin/cloudguard-server /app/cloudguard-server
 
 # Copy entrypoint script
 COPY container/entrypoint.sh /app/entrypoint.sh
@@ -116,7 +116,7 @@ RUN chown -R appuser:appuser /app
 
 # Environment variables — customise for your application
 ENV APP_HOST=[::]
-ENV APP_PORT={{PORT}}
+ENV APP_PORT=3847
 ENV APP_LOG_FORMAT=json
 ENV APP_DATA_DIR=/data
 
@@ -127,7 +127,7 @@ VOLUME ["/data"]
 USER appuser
 
 # Expose the application port
-EXPOSE {{PORT}}
+EXPOSE 3847
 
 # Health check — the application must respond 2xx at /health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \

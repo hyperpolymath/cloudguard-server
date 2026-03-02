@@ -1,5 +1,5 @@
 -- SPDX-License-Identifier: PMPL-1.0-or-later
--- Copyright (c) {{CURRENT_YEAR}} {{AUTHOR}} ({{OWNER}}) <{{AUTHOR_EMAIL}}>
+-- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 --
 ||| Memory Layout Proofs
 |||
@@ -8,9 +8,9 @@
 |||
 ||| @see https://en.wikipedia.org/wiki/Data_structure_alignment
 
-module {{PROJECT}}.ABI.Layout
+module CLOUDGUARD_SERVER.ABI.Layout
 
-import {{PROJECT}}.ABI.Types
+import CLOUDGUARD_SERVER.ABI.Types
 import Data.Vect
 import Data.So
 
