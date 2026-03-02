@@ -50,14 +50,13 @@
 #
 FROM cgr.dev/chainguard/wolfi-base:latest AS builder
 
-# TODO: Install your language toolchain
-RUN apk add --no-cache build-base
+RUN apk add --no-cache build-base rust
 
 WORKDIR /build
 
-# TODO: Copy source files and build
-COPY . .
-# RUN <your-build-command>
+COPY Cargo.toml Cargo.lock ./
+COPY src/ ./src/
+RUN cargo build --release
 
 # ============================================================================
 # Stage 2: Runtime
@@ -74,7 +73,7 @@ LABEL org.opencontainers.image.title="cloudguard-server" \
       org.opencontainers.image.url="https://github.com/hyperpolymath/cloudguard-server" \
       org.opencontainers.image.source="https://github.com/hyperpolymath/cloudguard-server" \
       org.opencontainers.image.vendor="hyperpolymath" \
-      org.opencontainers.image.licenses="{{LICENSE}}" \
+      org.opencontainers.image.licenses="PMPL-1.0-or-later" \
       org.opencontainers.image.authors="Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>" \
       dev.cerrotorre.manifest="container/manifest.toml" \
       dev.cerrotorre.gatekeeper="container/.gatekeeper.yaml" \
@@ -94,11 +93,7 @@ RUN addgroup -S appuser && adduser -S appuser -G appuser
 
 WORKDIR /app
 
-# TODO: Copy compiled binary/release from builder stage.
-# Examples:
-#   COPY --from=builder /build/target/release/cloudguard-server /app/cloudguard-server
-#   COPY --from=builder /build/_build/prod/rel/cloudguard-server /app/release/
-#   COPY --from=builder /build/zig-out/bin/cloudguard-server /app/cloudguard-server
+COPY --from=builder /build/target/release/cloudguard-server /app/cloudguard-server
 
 # Copy entrypoint script
 COPY container/entrypoint.sh /app/entrypoint.sh

@@ -54,10 +54,5 @@ fi
 # Replace the entrypoint shell with the application process so that
 # signals are delivered directly and PID 1 is the application.
 #
-# TODO: Replace the command below with your application binary.
-# Examples:
-#   exec /app/cloudguard-server
-#   exec /app/release/bin/cloudguard-server start
-#   exec /app/cloudguard-server serve --host "${APP_HOST}" --port "${APP_PORT}"
-
-exec "$@"
+export PORT="${APP_PORT:-3847}"
+exec /app/cloudguard-server

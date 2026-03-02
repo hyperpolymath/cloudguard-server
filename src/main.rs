@@ -9,18 +9,24 @@
 //!   - PanLL remote integration without Tauri
 //!
 //! Routes:
+//!   GET  /health                        — health check (public, no auth)
 //!   GET  /api/zones                     — list all zones
 //!   GET  /api/zones/:id/settings        — get zone settings
 //!   GET  /api/zones/:id/dns             — list DNS records
-//!   POST /api/zones/:id/harden          — apply hardening
-//!   POST /api/zones/:id/audit           — run compliance audit
 //!   POST /api/zones/:id/dns             — create DNS record
 //!   DELETE /api/zones/:id/dns/:record   — delete DNS record
+//!   POST /api/zones/:id/harden          — apply hardening
+//!   POST /api/zones/:id/audit           — run compliance audit
+//!   GET  /api/zones/:id/config          — download config snapshot
+//!   GET  /api/zones/:id/config/diff     — diff live vs policy
+//!   GET  /api/pages                     — list Pages projects
 //!   POST /api/bulk/harden               — harden multiple zones
 //!   GET  /ws/bulk                       — WebSocket for bulk operation progress
-//!   GET  /health                        — health check
+//!
+//! Authentication: Set CLOUDGUARD_API_KEY env var to require X-API-Key header.
 
 mod api;
+mod auth;
 
 use std::env;
 use std::net::SocketAddr;
@@ -35,9 +41,11 @@ use axum::{
 };
 use tower_http::cors::CorsLayer;
 
-/// Shared application state containing the CF API token.
+/// Shared application state containing the CF API token and optional API key.
 struct AppState {
     token: String,
+    /// If set, all /api/* and /ws/* routes require this key in X-API-Key header.
+    api_key: Option<String>,
 }
 
 #[tokio::main]
@@ -47,16 +55,20 @@ async fn main() {
         std::process::exit(1);
     });
 
+    let api_key = env::var("CLOUDGUARD_API_KEY").ok();
+    if api_key.is_none() {
+        eprintln!("Warning: CLOUDGUARD_API_KEY not set — API endpoints are UNAUTHENTICATED");
+    }
+
     let port: u16 = env::var("PORT")
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(3847);
 
-    let state = Arc::new(AppState { token });
+    let state = Arc::new(AppState { token, api_key });
 
-    let app = Router::new()
-        // Health check
-        .route("/health", get(health))
+    // Protected routes — require API key when CLOUDGUARD_API_KEY is set.
+    let protected = Router::new()
         // Zone operations
         .route("/api/zones", get(list_zones))
         .route("/api/zones/{id}/settings", get(get_zone_settings))
@@ -64,10 +76,24 @@ async fn main() {
         .route("/api/zones/{id}/dns/{record_id}", delete(delete_dns_record))
         .route("/api/zones/{id}/harden", post(harden_zone))
         .route("/api/zones/{id}/audit", post(audit_zone))
+        // Config sync
+        .route("/api/zones/{id}/config", get(download_config))
+        .route("/api/zones/{id}/config/diff", get(diff_config))
+        // Pages
+        .route("/api/pages", get(list_pages_projects))
         // Bulk operations
         .route("/api/bulk/harden", post(bulk_harden))
         // WebSocket for real-time progress
         .route("/ws/bulk", get(ws_bulk_handler))
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            auth::require_api_key,
+        ));
+
+    let app = Router::new()
+        // Health check — always public
+        .route("/health", get(health))
+        .merge(protected)
         .layer(CorsLayer::permissive())
         .with_state(state);
 
@@ -186,6 +212,52 @@ async fn audit_zone(
         "score": format!("{:.1}%", score),
         "findings": findings,
     })).into_response()
+}
+
+/// Download a full config snapshot for a zone (settings + DNS records as JSON).
+async fn download_config(
+    State(state): State<Arc<AppState>>,
+    Path(zone_id): Path<String>,
+) -> impl IntoResponse {
+    let client = api::AsyncCloudflareClient::new(&state.token);
+    match client.download_config(&zone_id).await {
+        Ok(config) => Json(serde_json::json!({ "success": true, "result": config })).into_response(),
+        Err(e) => Json(serde_json::json!({ "success": false, "error": e })).into_response(),
+    }
+}
+
+/// Diff live settings against the hardening policy.
+async fn diff_config(
+    State(state): State<Arc<AppState>>,
+    Path(zone_id): Path<String>,
+) -> impl IntoResponse {
+    let client = api::AsyncCloudflareClient::new(&state.token);
+    match client.diff_config(&zone_id).await {
+        Ok(diffs) => {
+            let matching = diffs.iter().filter(|d| d.matches).count();
+            let total = diffs.len();
+            Json(serde_json::json!({
+                "success": true,
+                "zone_id": zone_id,
+                "matching": matching,
+                "total": total,
+                "score": format!("{:.1}%", if total > 0 { matching as f64 / total as f64 * 100.0 } else { 100.0 }),
+                "diffs": diffs,
+            })).into_response()
+        }
+        Err(e) => Json(serde_json::json!({ "success": false, "error": e })).into_response(),
+    }
+}
+
+/// List Cloudflare Pages projects.
+async fn list_pages_projects(
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let client = api::AsyncCloudflareClient::new(&state.token);
+    match client.list_pages_projects().await {
+        Ok(projects) => Json(serde_json::json!({ "success": true, "result": projects })).into_response(),
+        Err(e) => Json(serde_json::json!({ "success": false, "error": e })).into_response(),
+    }
 }
 
 /// Bulk harden multiple zones. Request body: { "zone_ids": ["id1", "id2", ...] }

@@ -92,6 +92,38 @@ pub struct CfDnsRecord {
 
 fn default_ttl() -> u32 { 1 }
 
+/// Cloudflare Pages project metadata.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CfPagesProject {
+    pub id: String,
+    pub name: String,
+    #[serde(default)]
+    pub subdomain: String,
+    #[serde(default)]
+    pub domains: Vec<String>,
+    #[serde(default)]
+    pub production_branch: String,
+}
+
+/// One entry in a config diff (live vs policy comparison).
+#[derive(Debug, Serialize)]
+pub struct ConfigDiffEntry {
+    pub setting_id: String,
+    pub expected: String,
+    pub actual: String,
+    pub matches: bool,
+}
+
+/// Convert a serde_json::Value to a comparable string.
+fn setting_value_to_string(value: &serde_json::Value) -> String {
+    match value {
+        serde_json::Value::String(v) => v.clone(),
+        serde_json::Value::Bool(b) => if *b { "on".to_string() } else { "off".to_string() },
+        serde_json::Value::Number(n) => n.to_string(),
+        other => other.to_string(),
+    }
+}
+
 // ============================================================================
 // Audit finding
 // ============================================================================
@@ -330,6 +362,83 @@ impl AsyncCloudflareClient {
     /// Delete a DNS record.
     pub async fn delete_dns_record(&self, zone_id: &str, record_id: &str) -> Result<(), String> {
         self.delete_req(&format!("/zones/{}/dns_records/{}", zone_id, record_id)).await
+    }
+
+    // ========================================================================
+    // Config snapshot (download settings + DNS as a single JSON blob)
+    // ========================================================================
+
+    /// Download a full config snapshot for a zone (settings + DNS records).
+    pub async fn download_config(&self, zone_id: &str) -> Result<serde_json::Value, String> {
+        let settings = self.get_zone_settings(zone_id).await?;
+        let dns_records = self.list_dns_records(zone_id).await?;
+
+        Ok(serde_json::json!({
+            "schema_version": 1,
+            "exported_at": chrono::Utc::now().to_rfc3339(),
+            "zone_id": zone_id,
+            "settings": settings,
+            "dns_records": dns_records,
+        }))
+    }
+
+    /// Diff live settings against the hardening policy, returning per-setting comparison.
+    pub async fn diff_config(&self, zone_id: &str) -> Result<Vec<ConfigDiffEntry>, String> {
+        let settings = self.get_zone_settings(zone_id).await?;
+        let mut diffs = Vec::new();
+
+        for &(setting_id, expected, _severity) in HARDENING_POLICY {
+            let setting = settings.iter().find(|s| s.id == setting_id);
+            let actual = setting.map(|s| setting_value_to_string(&s.value))
+                .unwrap_or_else(|| "<missing>".to_string());
+            let matches = actual == expected;
+            diffs.push(ConfigDiffEntry {
+                setting_id: setting_id.to_string(),
+                expected: expected.to_string(),
+                actual,
+                matches,
+            });
+        }
+
+        Ok(diffs)
+    }
+
+    // ========================================================================
+    // Pages project listing
+    // ========================================================================
+
+    /// List Cloudflare Pages projects for the account.
+    pub async fn list_pages_projects(&self) -> Result<Vec<CfPagesProject>, String> {
+        let body = self.get("/accounts/_/pages/projects").await;
+
+        // The /accounts/_/ shorthand may not work; fall back to listing accounts first.
+        match body {
+            Ok(b) => {
+                let resp: CfResponse<Vec<CfPagesProject>> = serde_json::from_value(b)
+                    .map_err(|e| format!("Parse error: {}", e))?;
+                Ok(resp.result.unwrap_or_default())
+            }
+            Err(_) => {
+                // Try to find account ID from zones, then query pages.
+                let zones = self.list_zones().await?;
+                if zones.is_empty() {
+                    return Ok(Vec::new());
+                }
+                // Get account ID from first zone.
+                let zone_body = self.get(&format!("/zones/{}", zones[0].id)).await?;
+                let account_id = zone_body
+                    .get("result")
+                    .and_then(|r| r.get("account"))
+                    .and_then(|a| a.get("id"))
+                    .and_then(|id| id.as_str())
+                    .ok_or_else(|| "Could not determine account ID".to_string())?;
+
+                let pages_body = self.get(&format!("/accounts/{}/pages/projects", account_id)).await?;
+                let resp: CfResponse<Vec<CfPagesProject>> = serde_json::from_value(pages_body)
+                    .map_err(|e| format!("Parse error: {}", e))?;
+                Ok(resp.result.unwrap_or_default())
+            }
+        }
     }
 }
 
