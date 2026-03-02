@@ -1,0 +1,246 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# =============================================================================
+# A2ML Trustfile Template (Cyber-Resilient Baseline)
+# Replace all {{PLACEHOLDERS}} for each derived repository.
+# See Trustfile_just_an_example.a2ml for a fully populated reference.
+# =============================================================================
+
+---
+### [META]
+id: "did:web:{{DOMAIN}}"
+version: "{{TRUSTFILE_VERSION}}"
+context:
+  - "https://a2ml.org/ns/v2"
+  - "https://leanprover-community.github.io/lean4"
+  - "https://hypatia.scans/ns/v1"
+  - "https://w3id.org/security/v4"
+  - "https://w3id.org/transparency/v1"
+meta:
+  generated: "{{GENERATED_AT}}"
+  expires: "{{EXPIRES_AT}}"
+  signature:
+    algorithm: "Ed448+Dilithium5"
+    value: "{{PRIMARY_SIGNATURE}}"
+    signedBy: "did:web:{{DOMAIN}}#primary-sig"
+  fallbackSignature:
+    algorithm: "SPHINCS+"
+    value: "{{FALLBACK_SIGNATURE}}"
+  integrity:
+    sha3-512: "{{SHA3_512}}"
+    shake256: "{{SHAKE256}}"
+    zonemd: "{{ZONEMD}}"
+
+---
+### [THREAT_MODEL]
+adversaries:
+  - type: "APT"
+    mitigations:
+      - "Capability-based auth → No lateral movement."
+      - "LEAN4 proofs → No exploit primitives."
+      - "Transparency logs → Immediate detection."
+  - type: "Ransomware"
+    mitigations:
+      - "Consent-Aware HTTP → No bulk exfiltration."
+      - "SDP (CAdRE Router) → Resource isolation."
+      - "Immutable logs → Instant rollback."
+  - type: "Quantum Adversary"
+    mitigations:
+      - "Kyber1024 + Dilithium5 → PQ-resistant crypto."
+      - "SPHINCS+ fallback → Crypto agility."
+      - "GitBot-Fleet → Automated key rotation."
+  - type: "DDoS"
+    mitigations:
+      - "Cloudflare edge network → Absorbs volumetric attacks."
+      - "HTTP DDoS Managed Ruleset → Auto-mitigation at max sensitivity."
+      - "Challenge Passage TTL → Rate-limits challenge solvers."
+  - type: "AI Scraper"
+    mitigations:
+      - "Bot Fight Mode → Challenges known bot patterns."
+      - "Block AI Bots → Blocks verified AI crawlers."
+      - "AI Labyrinth → Traps scrapers in decoy content maze."
+      - "AI Crawl Control → Per-crawler blocking."
+  - type: "Credential Stuffer"
+    mitigations:
+      - "Browser Integrity Check → Rejects headless browsers."
+      - "HSTS preload → Prevents SSL-stripping MITM."
+  - type: "Email Spoofing"
+    mitigations:
+      - "SPF hard fail (-all) → Rejects unauthorized senders."
+      - "DMARC p=reject → Drops spoofed mail."
+      - "CAA records → Restricts certificate issuance."
+
+---
+### [DNS]
+dnssec:
+  enabled: true
+  algorithm: "ECDSAP256SHA256"
+  ds_record: "{{DS_RECORD}}"
+
+---
+### [TRUSTFILE]
+issuer: "did:web:{{DOMAIN}}"
+keys:
+  - id: "#primary-sig"
+    type: "HybridKey2024"
+    classical:
+      algorithm: "Ed448"
+      publicKeyJwk:
+        kty: "OKP"
+        crv: "Ed448"
+        x: "{{ED448_PUBLIC_KEY}}"
+    postQuantum:
+      algorithm: "Dilithium5"
+      publicKeyJwk:
+        kty: "OKP"
+        crv: "Dilithium5"
+        x: "{{DILITHIUM5_PUBLIC_KEY}}"
+    fallback:
+      algorithm: "SPHINCS+"
+      publicKeyJwk:
+        kty: "OKP"
+        crv: "SPHINCS+"
+        x: "{{SPHINCS_PLUS_PUBLIC_KEY}}"
+
+algorithms:
+  hashing: ["SHA3-512", "SHAKE256", "BLAKE3"]
+  kdf: "HKDF-SHAKE512"
+  rng: "ChaCha20-DRBG"
+
+---
+### [SSL/TLS]
+protocols:
+  - "TLSv1.3"
+minimum_version: "1.2"
+ciphers:
+  - "TLS_AES_256_GCM_SHA384"
+  - "TLS_CHACHA20_POLY1305_SHA256"
+features:
+  ocspStapling: true
+  certificateTransparency: true
+  always_use_https: true
+  automatic_https_rewrites: true
+  opportunistic_encryption: true
+
+---
+### [CLOUDFLARE]
+waf:
+  ruleset: "OWASP_ModSecurity_CRS"
+  sensitivity: "high"
+  managed_rulesets:
+    - "Cloudflare Managed Ruleset"
+    - "Cloudflare OWASP Core Ruleset"
+  ddos:
+    sensitivity: "high"
+    action: "managed_challenge"
+
+---
+### [CLOUDFLARE_EDGE_SECURITY]
+ssl_tls:
+  mode: "strict"
+  hsts:
+    enabled: true
+    max_age: 31536000
+    include_subdomains: true
+    preload: true
+    nosniff: true
+
+bot_defense:
+  bot_fight_mode: true
+  block_ai_bots: true
+  ai_labyrinth: true
+  ai_crawl_control:
+    default_action: "block"
+
+scrape_shield:
+  email_obfuscation: true
+  hotlink_protection: true
+  server_side_excludes: true
+
+browser_integrity:
+  browser_check: true
+  security_level: "medium"
+  challenge_ttl: 1800
+
+page_shield:
+  enabled: true
+
+security_txt:
+  contact: "mailto:{{SECURITY_CONTACT}}"
+  preferred_languages: "en"
+  expires: "{{SECURITY_TXT_EXPIRES}}"
+
+---
+### [RESPONSE_HEADERS]
+managed_transforms:
+  add:
+    - "X-Content-Type-Options: nosniff"
+    - "X-Frame-Options: SAMEORIGIN"
+    - "Referrer-Policy: strict-origin-when-cross-origin"
+  remove:
+    - "Server"
+    - "X-Powered-By"
+custom_headers:
+  - name: "Permissions-Policy"
+    value: "camera=(), microphone=(), geolocation=(), payment=()"
+  - name: "Content-Security-Policy"
+    value: "{{CSP_POLICY}}"
+  - name: "Cross-Origin-Opener-Policy"
+    value: "same-origin"
+
+---
+### [EMAIL_SECURITY]
+non_sending_domains:
+  spf: "v=spf1 -all"
+  dmarc: "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s; fo=1"
+  dkim: "revoked (empty public key)"
+sending_domains:
+  spf: "v=spf1 include:{{SPF_INCLUDES}} -all"
+  dmarc: "v=DMARC1; p=reject; sp=reject; adkim=s; aspf=s; pct=100; fo=1"
+  dkim: "2048-bit RSA minimum"
+
+---
+### [NETWORK]
+http2: true
+http3: true
+zero_rtt: true
+websockets: true
+onion_routing: true
+brotli: true
+
+---
+### [PERFORMANCE]
+early_hints: true
+speed_brain: true
+auto_minify:
+  javascript: true
+  css: true
+  html: true
+rocket_loader: false
+always_online: true
+
+---
+### [CI_CD]
+github_actions:
+  workflow: ".github/workflows/trustfile.yml"
+  checks:
+    - "a2ml validate {{TRUSTFILE_PATH}}"
+    - "lake build && lake exectest"
+    - "hypatia scan --config hypatia.yml"
+
+gitbot_fleet:
+  hooks:
+    - type: "pre-commit"
+      script: "a2ml validate {{TRUSTFILE_PATH}}"
+    - type: "post-merge"
+      script: "gitbot-fleet diff --file {{TRUSTFILE_PATH}}"
+
+---
+### [DEPLOYMENT]
+steps:
+  - "Replace all {{PLACEHOLDERS}}."
+  - "Generate proofs and signatures."
+  - "Enable DNSSEC and propagate DS records."
+  - "Apply Cloudflare edge settings via API or dashboard."
+  - "Configure DNS records (SPF, DMARC, DKIM, CAA)."
+  - "Set up security.txt."
+  - "Validate trustfile and commit."

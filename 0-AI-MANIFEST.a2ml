@@ -1,0 +1,47 @@
+# CloudGuard Server — AI Manifest
+
+**THIS FILE MUST BE READ FIRST BY ALL AI AGENTS**
+
+## WHAT IS THIS?
+
+CloudGuard Server is the standalone REST + WebSocket API for Cloudflare domain
+security management. It provides HTTP endpoints for all CloudGuard operations,
+enabling external dashboards, CI/CD pipelines, and PanLL remote integration.
+
+## CANONICAL LOCATIONS
+
+| Content | Location |
+|---------|----------|
+| Machine-readable metadata | `.machine_readable/` ONLY |
+| Rust source | `src/` |
+| Async API client | `src/api/mod.rs` |
+| Server entry point | `src/main.rs` |
+| Build config | `Cargo.toml` |
+
+## CRITICAL INVARIANTS
+
+1. **License**: PMPL-1.0-or-later on all original code
+2. **Auth**: CLOUDFLARE_API_TOKEN env var required
+3. **Rate limiting**: 333ms sleep between CF API requests
+4. **Port**: Default 3847, configurable via PORT env var
+5. **SCM files**: ONLY in `.machine_readable/`, NEVER in root
+
+## API ROUTES
+
+```
+GET  /health                     — health check
+GET  /api/zones                  — list all zones
+GET  /api/zones/:id/settings     — get zone settings
+GET  /api/zones/:id/dns          — list DNS records
+POST /api/zones/:id/dns          — create DNS record
+DELETE /api/zones/:id/dns/:rid   — delete DNS record
+POST /api/zones/:id/harden       — apply hardening
+POST /api/zones/:id/audit        — run compliance audit
+POST /api/bulk/harden            — bulk harden zones
+GET  /ws/bulk                    — WebSocket for progress
+```
+
+## REPOSITORY RELATIONSHIPS
+
+- **Parent module**: `panll/src/core/CloudGuard*` (PanLL GUI module)
+- **CLI companion**: `cloudguard-cli` (command-line interface)
