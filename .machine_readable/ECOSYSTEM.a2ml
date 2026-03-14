@@ -10,15 +10,15 @@ last-updated = "2026-03-02"
 
 [project]
 name = "cloudguard-server"
-purpose = "{{PROJECT_PURPOSE}}"
-role = "{{PROJECT_ROLE}}"  # e.g. ffi-infrastructure, cli-tool, library, service
+purpose = "Cloud security guard server — threat detection, policy enforcement, and security monitoring"
+role = "service"
 
 [position-in-ecosystem]
 tier = "infrastructure"  # 1 | 2 | infrastructure
 
 [related-projects]
 # relationship types: sibling-standard, dependency, dependent, inspiration, potential-consumer
-# - { name = "language-bridges", relationship = "sibling-standard" }
+# - { name = "cloudguard-cli", relationship = "sibling-standard" }
 # - { name = "hypatia", relationship = "potential-consumer" }
 
 [integration-points]

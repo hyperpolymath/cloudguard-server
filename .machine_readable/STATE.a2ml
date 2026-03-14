@@ -3,19 +3,19 @@
 #
 # STATE.a2ml — Project state checkpoint (META-TEMPLATE)
 #
-# This is the STATE file for rsr-template-repo itself.
+# This is the STATE file for cloudguard-server itself.
 # When consumed by a new project, replace PLACEHOLDER tokens
 # and customize sections below for the target project.
 
 [metadata]
-project = "rsr-template-repo"
+project = "cloudguard-server"
 version = "0.2.0"
 last-updated = "2026-02-28"
 status = "active"  # active | paused | archived
 
 [project-context]
-name = "rsr-template-repo"
-purpose = "Canonical RSR-compliant repository template providing scaffolding for all hyperpolymath projects — including CI/CD, AI manifests, ABI/FFI standards, container ecosystem, and governance infrastructure."
+name = "cloudguard-server"
+purpose = "Cloud security guard server — threat detection, policy enforcement, and security monitoring infrastructure.
 completion-percentage = 95
 
 [position]
