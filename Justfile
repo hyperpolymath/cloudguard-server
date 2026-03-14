@@ -14,6 +14,9 @@ set shell := ["bash", "-uc"]
 set dotenv-load := true
 set positional-arguments := true
 
+# Import auto-generated contractile recipes
+import? "contractile.just"
+
 # Project metadata — customize these
 project := "cloudguard-server"
 version := "0.1.0"
