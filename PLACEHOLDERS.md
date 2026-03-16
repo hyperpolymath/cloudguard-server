@@ -67,8 +67,8 @@ sed -i "s/2026-03-02/$(date +%Y-%m-%d)/g" $(grep -rl '2026-03-02' .)
 
 | Placeholder | Description | Example | Files |
 |---|---|---|---|
-| `{{SECURITY_EMAIL}}` | Security contact email | `security@example.org` | SECURITY.md |
-| `{{PGP_FINGERPRINT}}` | 40-char PGP fingerprint | `ABCD 1234 ...` | SECURITY.md |
+| `6759885+hyperpolymath@users.noreply.github.com` | Security contact email | `security@example.org` | SECURITY.md |
+| `[PGP fingerprint not set]` | 40-char PGP fingerprint | `ABCD 1234 ...` | SECURITY.md |
 | `{{PGP_KEY_URL}}` | URL to public PGP key | `https://keys.openpgp.org/...` | SECURITY.md |
 | `{{WEBSITE}}` | Project website | `https://example.org` | SECURITY.md |
 | `{{CONDUCT_EMAIL}}` | Conduct reports email | `conduct@example.org` | CODE_OF_CONDUCT.md |
@@ -79,13 +79,13 @@ sed -i "s/2026-03-02/$(date +%Y-%m-%d)/g" $(grep -rl '2026-03-02' .)
 
 | Placeholder | Description | Example | Files |
 |---|---|---|---|
-| `{{MAIN_BRANCH}}` | Main branch name | `main` | CONTRIBUTING.md |
+| `main` | Main branch name | `main` | CONTRIBUTING.md |
 
 ### Build
 
 | Placeholder | Description | Example | Files |
 |---|---|---|---|
-| `{{LICENSE}}` | License name | `PMPL-1.0-or-later` | ABI-FFI-README.md |
+| `PMPL-1.0-or-later` | License name | `PMPL-1.0-or-later` | ABI-FFI-README.md |
 | `{{PROJECT_PURPOSE}}` | One-line project description | `FFI bridges between languages` | STATE.a2ml |
 
 ### AI Manifest
