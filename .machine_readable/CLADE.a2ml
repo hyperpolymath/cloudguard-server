@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "3944fe8f-d133-5bff-b02d-05b07038035f"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "cloudguard-server"
+prefixed-name = "ix-cloudguard-server"
+
+[clade]
+primary = "ix"
+secondary = ["sc"]
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/cloudguard-server"
+gitlab = "hyperpolymath/cloudguard-server"
+bitbucket = "hyperpolymath/cloudguard-server"
+
+[lineage]
+type = "standalone"
+parent = "Cloud security guard server"
+born = "2026-03-16"
