@@ -25,6 +25,7 @@
 //!
 //! Authentication: Set CLOUDGUARD_API_KEY env var to require X-API-Key header.
 
+#![forbid(unsafe_code)]
 mod api;
 mod auth;
 
