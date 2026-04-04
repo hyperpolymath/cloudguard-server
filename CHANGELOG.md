@@ -9,3 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- Run: just changelog -->
 
 ## [Unreleased]
+
+### Added (2026-04-04)
+- E2E test suite (`tests/e2e.sh`) with CI workflow — covers 6 test sections for end-to-end validation
+- GitHub Actions E2E workflow (`.github/workflows/e2e.yml`)
