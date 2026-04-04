@@ -8,11 +8,14 @@
 |----------|-------|-------|
 | Test directories | 1 | Location(s): /tests |
 | CI workflows | 20 | Running tests on GitHub Actions |
-COVERAGE_TABLE
+| Unit tests | Built-in | Rust/cargo test framework |
+| Integration tests | Configured | Via integration/ directory |
 
 ## What's Covered
 
-COVERAGE_ITEMS
+- [x] Rust unit test suite (cargo test)
+- [x] Documentation tests
+- [x] Example programs with tests
 
 ## Still Missing (for CRG B+)
 
