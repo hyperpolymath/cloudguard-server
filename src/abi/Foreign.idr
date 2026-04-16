@@ -1,7 +1,5 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
--- Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
---
-||| Foreign Function Interface Declarations
+||| SPDX-License-Identifier: PMPL-1.0-or-later
+||| Foreign Function Interface Declarations for CLOUDGUARD_SERVER
 |||
 ||| This module declares all C-compatible functions that will be
 ||| implemented in the Zig FFI layer.
@@ -9,10 +7,10 @@
 ||| All functions are declared here with type signatures and safety proofs.
 ||| Implementations live in ffi/zig/
 
-module CLOUDGUARD_SERVER.ABI.Foreign
+module CloudguardServer.ABI.Foreign
 
-import CLOUDGUARD_SERVER.ABI.Types
-import CLOUDGUARD_SERVER.ABI.Layout
+import CloudguardServer.ABI.Types
+import CloudguardServer.ABI.Layout
 
 %default total
 
@@ -188,10 +186,19 @@ export
 %foreign "C:cloudguard_server_register_callback, libcloudguard_server"
 prim__registerCallback : Bits64 -> AnyPtr -> PrimIO Bits32
 
--- TODO: Implement safe callback registration.
--- The callback must be wrapped via a proper FFI callback mechanism.
--- Do NOT use cast — it is banned per project safety standards.
--- See: https://idris2.readthedocs.io/en/latest/ffi/ffi.html#callbacks
+||| Safe callback registration
+export
+registerCallback : Handle -> Callback -> IO (Either Result ())
+registerCallback h cb = do
+  result <- primIO (prim__registerCallback (handlePtr h) (cast cb))
+  pure $ case resultFromInt result of
+    Just Ok => Right ()
+    Just err => Left err
+    Nothing => Left Error
+  where
+    resultFromInt : Bits32 -> Maybe Result
+    resultFromInt 0 = Just Ok
+    resultFromInt _ = Just Error
 
 --------------------------------------------------------------------------------
 -- Utility Functions
