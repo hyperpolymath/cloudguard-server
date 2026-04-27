@@ -101,8 +101,10 @@ async fn main() {
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     eprintln!("CloudGuard Server listening on http://{}", addr);
 
-    let listener = tokio::net::TcpListener::bind(addr).await.expect("TODO: handle error");
-    axum::serve(listener, app).await.expect("TODO: handle error");
+    let listener = tokio::net::TcpListener::bind(addr).await
+        .unwrap_or_else(|e| panic!("CloudGuard Server failed to bind {}: {} (is the port already in use?)", addr, e));
+    axum::serve(listener, app).await
+        .unwrap_or_else(|e| panic!("CloudGuard Server axum::serve crashed: {}", e));
 }
 
 // ============================================================================
