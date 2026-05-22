@@ -20,7 +20,7 @@ enabling external dashboards, CI/CD pipelines, and PanLL remote integration.
 
 ## CRITICAL INVARIANTS
 
-1. **License**: PMPL-1.0-or-later on all original code
+1. **License**: MPL-2.0 on all original code
 2. **Auth**: CLOUDFLARE_API_TOKEN env var required
 3. **Rate limiting**: 333ms sleep between CF API requests
 4. **Port**: Default 3847, configurable via PORT env var

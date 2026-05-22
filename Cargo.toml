@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 
 [package]
 name = "cloudguard-server"
@@ -6,7 +6,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 description = "CloudGuard Server — REST + WebSocket API for Cloudflare domain security management"
-license = "PMPL-1.0-or-later"
+license = "MPL-2.0"
 repository = "https://github.com/hyperpolymath/cloudguard-server"
 readme = "README.adoc"
 
