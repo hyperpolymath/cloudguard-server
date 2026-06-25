@@ -1,136 +1,97 @@
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/hyperpolymath)
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 
-// SPDX-License-Identifier: CC-BY-SA-4.0
+REST + WebSocket API for Cloudflare domain security management. Enables
+external dashboards, CI/CD pipelines, and PanLL remote integration to
+audit, harden, and manage Cloudflare domains over HTTP.
 
-= CloudGuard Server
-:toc: macro
-:toc-title: Contents
-:toclevels: 2
+<div id="toc">
 
-REST + WebSocket API for Cloudflare domain security management.
-Enables external dashboards, CI/CD pipelines, and PanLL remote integration
-to audit, harden, and manage Cloudflare domains over HTTP.
+</div>
 
-toc::[]
-
-== Overview
+# Overview
 
 CloudGuard Server wraps all CloudGuard operations as HTTP endpoints,
-providing a programmatic interface for tools that can't use the CLI
+providing a programmatic interface for tools that can’t use the CLI
 directly. It includes WebSocket support for real-time progress updates
 during bulk operations.
 
 Companion projects:
 
-* **cloudguard-cli** — Command-line interface for terminal/CI use
-* **PanLL CloudGuard module** — GUI panel with three-panel compliance view
+- **cloudguard-cli** — Command-line interface for terminal/CI use
 
-== Installation
+- **PanLL CloudGuard module** — GUI panel with three-panel compliance
+  view
 
-=== From source
+# Installation
 
-[source,bash]
-----
+## From source
+
+```bash
 git clone https://github.com/hyperpolymath/cloudguard-server
 cd cloudguard-server
 cargo build --release
 # Binary at target/release/cloudguard-server
-----
+```
 
-=== Environment
+## Environment
 
-[source,bash]
-----
+```bash
 export CLOUDFLARE_API_TOKEN="your-token-here"
 
 # Optional: custom port (default 3847)
 export PORT=3847
-----
+```
 
-=== Run
+## Run
 
-[source,bash]
-----
+```bash
 ./target/release/cloudguard-server
 # CloudGuard Server listening on http://0.0.0.0:3847
-----
+```
 
-== API Routes
+# API Routes
 
-[cols="1,3,3"]
-|===
-| Method | Path | Description
+| Method | Path | Description |
+|----|----|----|
+| GET | `/health` | Health check |
+| GET | `/api/zones` | List all zones in the Cloudflare account |
+| GET | `/api/zones/:id/settings` | Get all settings for a zone |
+| GET | `/api/zones/:id/dns` | List DNS records for a zone |
+| POST | `/api/zones/:id/dns` | Create a DNS record |
+| DELETE | `/api/zones/:id/dns/:record_id` | Delete a DNS record |
+| POST | `/api/zones/:id/harden` | Apply hardening settings to a zone |
+| POST | `/api/zones/:id/audit` | Run compliance audit on a zone |
+| POST | `/api/bulk/harden` | Bulk harden multiple zones |
+| GET (WebSocket) | `/ws/bulk` | Real-time progress for bulk operations |
 
-| GET
-| `/health`
-| Health check
+# Examples
 
-| GET
-| `/api/zones`
-| List all zones in the Cloudflare account
+## List zones
 
-| GET
-| `/api/zones/:id/settings`
-| Get all settings for a zone
-
-| GET
-| `/api/zones/:id/dns`
-| List DNS records for a zone
-
-| POST
-| `/api/zones/:id/dns`
-| Create a DNS record
-
-| DELETE
-| `/api/zones/:id/dns/:record_id`
-| Delete a DNS record
-
-| POST
-| `/api/zones/:id/harden`
-| Apply hardening settings to a zone
-
-| POST
-| `/api/zones/:id/audit`
-| Run compliance audit on a zone
-
-| POST
-| `/api/bulk/harden`
-| Bulk harden multiple zones
-
-| GET (WebSocket)
-| `/ws/bulk`
-| Real-time progress for bulk operations
-|===
-
-== Examples
-
-=== List zones
-
-[source,bash]
-----
+```bash
 curl http://localhost:3847/api/zones
-----
+```
 
-=== Audit a zone
+## Audit a zone
 
-[source,bash]
-----
+```bash
 curl -X POST http://localhost:3847/api/zones/ZONE_ID/audit
-----
+```
 
-=== Bulk harden via REST
+## Bulk harden via REST
 
-[source,bash]
-----
+```bash
 curl -X POST http://localhost:3847/api/bulk/harden \
   -H "Content-Type: application/json" \
   -d '{"zone_ids": ["id1", "id2", "id3"]}'
-----
+```
 
-=== Bulk harden via WebSocket (real-time progress)
+## Bulk harden via WebSocket (real-time progress)
 
-[source,javascript]
-----
+```javascript
 const ws = new WebSocket("ws://localhost:3847/ws/bulk");
 ws.onmessage = (e) => console.log(JSON.parse(e.data));
 ws.onopen = () => ws.send(JSON.stringify({
@@ -141,31 +102,29 @@ ws.onopen = () => ws.send(JSON.stringify({
 // Receives: { type: "zone_complete", zone_id: "id1", status: "hardened", settings_updated: 17 }
 // ... per zone ...
 // Receives: { type: "complete", total: 3 }
-----
+```
 
-== Response Format
+# Response Format
 
 All endpoints return JSON with a consistent envelope:
 
-[source,json]
-----
+```json
 {
   "success": true,
   "result": { ... }
 }
-----
+```
 
 On error:
 
-[source,json]
-----
+```json
 {
   "success": false,
   "error": "description of what went wrong"
 }
-----
+```
 
-== License
+# License
 
 MPL-2.0
 
