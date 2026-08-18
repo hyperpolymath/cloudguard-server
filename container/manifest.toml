@@ -17,7 +17,7 @@ tracking.
 """
 license = "{{LICENSE}}"
 homepage = "https://github.com/hyperpolymath/cloudguard-server"
-maintainer = "Jonathan D.A. Jewell <{{EMAIL}}>"
+maintainer = "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
 
 [provenance]
 upstream = "https://github.com/hyperpolymath/cloudguard-server"
