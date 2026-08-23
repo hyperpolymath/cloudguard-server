@@ -2,8 +2,8 @@
 git clone https://github.com/hyperpolymath/cloudguard-server.git
 cd cloudguard-server
 
-# Using Nix (recommended for reproducibility)
-nix develop
+# Using Guix (recommended for reproducibility)
+guix develop
 
 # Or using toolbox/distrobox
 toolbox create cloudguard-server-dev
@@ -45,7 +45,7 @@ cloudguard-server/
 ├── MAINTAINERS.md
 ├── README.adoc
 ├── SECURITY.md
-├── flake.nix            # Nix flake — fallback (Perimeter 1)
+├── flake.guix            # Guix flake — fallback (Perimeter 1)
 ├── guix.scm             # Guix package — primary (Perimeter 1)
 └── Justfile             # Task runner (Perimeter 1)
 ```
