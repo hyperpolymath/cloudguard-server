@@ -1,0 +1,59 @@
+== CLOUDGUARD_SERVER Component Readiness Assessment
+
+*Standard:*
+https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades[Component
+Readiness Grades (CRG) v1.0] *Assessed:* 2026-03-02 *Assessor:* Jonathan
+D.A. Jewell
+
+*Current Grade:* C
+
+=== Grade Reference
+
+[width="100%",cols="8%,22%,19%,51%",options="header",]
+|===
+|Grade |Name |Release Stage |Meaning
+|X |Untested |— |No testing performed. Status unknown.
+
+|F |Harmful / Wasteful |— |Reject, deprecate, or delegate.
+
+|E |Minimal / Salvageable |Pre-alpha |Barely functional. Needs redesign
+or major work.
+
+|D |Partial / Inconsistent |Alpha |Works on some things but not
+systematically.
+
+|C |Self-Validated |Beta |Dogfooded and reliable in home context.
+
+|B |Broadly Validated |Release Candidate |Tested on 6+ diverse external
+targets.
+
+|A |Field-Proven |Stable |Real-world feedback confirms value. No harm in
+wild.
+|===
+
+=== Component Assessment
+
+[width="99%",cols="21%,6%,18%,42%,13%",options="header",]
+|===
+|Component |Grade |Release Stage |Evidence Summary |Last Assessed
+|`+example-command+` |X |— |Not yet tested. |2026-03-02
+|`+another-feature+` |X |— |Not yet tested. |2026-03-02
+|===
+
+=== Detailed Assessment
+
+=== Notes
+
+* Grades are per-component, not per-project.
+* Grade A does not mean perfection — it means demonstrated value in the
+field.
+* Grade F includes opportunity cost — maintaining something when a
+better tool exists.
+* Grades can be skipped if evidence supports it (e.g., X → C if
+dogfooded immediately).
+* Review all grades before each release and at least once per release
+cycle.
+* See the
+https://github.com/hyperpolymath/standards/tree/main/component-readiness-grades[full
+CRG standard] for complete definitions, evidence requirements, and
+transition criteria.
