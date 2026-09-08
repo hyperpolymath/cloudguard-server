@@ -19,11 +19,12 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
   security-events: write
   pull-requests: write
 
 jobs:
   hypatia:
-    uses: hyperpolymath/standards/.github/workflows/hypatia-scan-reusable.yml@7fdc2705df74b4e352d2a1cde3e87a5923fdf329
+    uses: hyperpolymath/standards/.github/workflows/hypatia-scan-reusable.yml@fad242d35291de1898242d6737ba02b74a59a2f2
     secrets: inherit
